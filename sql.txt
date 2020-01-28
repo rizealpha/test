@@ -1,0 +1,23 @@
+select 
+sale_order as "Commande",
+sso.in_tax_total as "totalttc",
+bp.code as "codeproduct",
+nbr as "nbr",
+conditionment as "conditionment",
+color as "color",
+aspect as "aspect",
+sum(qty) as "quantiter",
+delivered_qty as "quantiterDelivrer",
+ssol.unit as "uniter",
+price as "prixUnitHT",
+ssol.in_tax_total as "prixUnitTTC",
+sum(ssol.ex_tax_total) as "prixht",
+sum(ssol.in_tax_total) as "prixttc"
+from (((sale_sale_order_line ssol
+	 inner join sale_sale_order sso on ssol.id = sso.id)
+	 inner join base_product bp on ssol.product_name = bp.name)
+	 inner join base_product_family bpf on bp.product_family = bpf.id)
+where sso.delivery_state < 3
+and sso.status_select = 3
+and bpf.code != '4000'
+group by sale_order,sso.in_tax_total,bp.code,nbr,conditionment ,color,aspect,qty,delivered_qty,ssol.unit,ssol.price,ssol.in_tax_total
